@@ -1,0 +1,87 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "ranking": 1,
+      "name": "Men's Tree Runner",
+      "price": 140000,
+      "category": "best-seller",
+      "image": "https://cdn.allbirds.com/image/upload/f_auto,q_auto,w_600/cms/1X45GF5iI5F05u45x35/45g5.png",
+      "sizes": [250, 260, 270, 280, 290]
+    },
+    {
+      "id": 2,
+      "ranking": 2,
+      "name": "Women's Wool Runner",
+      "price": 150000,
+      "category": "best-seller",
+      "image": "https://cdn.allbirds.com/image/upload/f_auto,q_auto,w_600/cms/2Y45GF5iI5F05u45x35/45g6.png",
+      "sizes": [230, 240, 250]
+    },
+    {
+      "id": 3,
+      "ranking": 3,
+      "name": "Men's Tree Dasher 2",
+      "price": 185000,
+      "category": "best-seller",
+      "image": "https://cdn.allbirds.com/image/upload/f_auto,q_auto,w_600/cms/3Z45GF5iI5F05u45x35/45g7.png",
+      "sizes": [260, 270, 280]
+    }
+  ],
+  "cart": [],"realTime": [
+    {
+      "id": 1,
+      "rank": 1,
+      "name": "Men's Tree Runner",
+      "color": "Mist (White Sole)",
+      "price": 140000,
+      "image": "https://cdn.allbirds.com/image/upload/f_auto,q_auto,w_600/cms/1X45GF5iI5F05u45x35/45g5.png",
+      "sizes": [250, 260, 270, 280, 290]
+    },
+    {
+      "id": 2,
+      "rank": 2,
+      "name": "Women's Wool Runner",
+      "color": "Natural Grey (Cream Sole)",
+      "price": 150000,
+      "image": "https://cdn.allbirds.com/image/upload/f_auto,q_auto,w_600/cms/2Y45GF5iI5F05u45x35/45g6.png",
+      "sizes": [230, 235, 240, 245]
+    },
+    {
+      "id": 3,
+      "rank": 3,
+      "name": "Men's Tree Dasher 2",
+      "color": "Blizzard (White Sole)",
+      "price": 185000,
+      "image": "https://cdn.allbirds.com/image/upload/f_auto,q_auto,w_600/cms/3Z45GF5iI5F05u45x35/45g7.png",
+      "sizes": [260, 270, 280, 290]
+    },
+    {
+      "id": 4,
+      "rank": 4,
+      "name": "Tree Piper",
+      "color": "Kaikoura White",
+      "price": 130000,
+      "image": "https://cdn.allbirds.com/image/upload/f_auto,q_auto,w_600/cms/4W45GF5iI5F05u45x35/45g8.png",
+      "sizes": [250, 260, 270]
+    },
+    {
+      "id": 5,
+      "rank": 5,
+      "name": "Wool Lounger",
+      "color": "Natural Grey",
+      "price": 145000,
+      "image": "https://cdn.allbirds.com/image/upload/f_auto,q_auto,w_600/cms/1X45GF5iI5F05u45x35/45g5.png",
+      "sizes": [240, 250, 260, 270]
+    },
+    {
+      "id": 6,
+      "rank": 6,
+      "name": "Tree Flyer",
+      "color": "Buoyant Yellow",
+      "price": 210000,
+      "image": "https://cdn.allbirds.com/image/upload/f_auto,q_auto,w_600/cms/3Z45GF5iI5F05u45x35/45g7.png",
+      "sizes": [255, 265, 275, 285]
+    }
+  ]
+}
