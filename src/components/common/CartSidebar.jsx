@@ -138,9 +138,7 @@ export default function CartSidebar() {
     updateQuantity, removeFromCart, checkout 
   } = useCart();
 
-  // 총 금액 계산 (할인율 적용된 가격 * 수량)
   const totalPrice = cartItems.reduce((acc, item) => {
-    // 백엔드 item.productId가 null일 경우(상품 삭제됨) 대비
     if (!item.productId) return acc;
     const price = item.productId.price * (1 - (item.productId.discountRate || 0) / 100);
     return acc + (price * item.quantity);
@@ -160,13 +158,17 @@ export default function CartSidebar() {
             <EmptyCart>장바구니가 비어있습니다.</EmptyCart>
           ) : (
             cartItems.map(item => {
-                if(!item.productId) return null; // 방어 코드
+                if(!item.productId) return null;
                 const product = item.productId;
                 const realPrice = product.price * (1 - (product.discountRate || 0) / 100);
 
+                // [수정] 저장된 이미지가 있으면 사용, 없으면(예전 데이터) 기본 이미지 사용
+                const displayImage = item.selectedImage || getImageUrl(product.images?.[0]);
+
                 return (
                   <CartItem key={item._id}>
-                    <img src={getImageUrl(product.images?.[0])} alt={product.name} />
+                    {/* displayImage 사용 */}
+                    <img src={displayImage} alt={product.name} />
                     <ItemInfo>
                       <div>
                         <div className="name">{product.name}</div>

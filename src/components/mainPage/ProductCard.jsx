@@ -27,7 +27,6 @@ const ImageArea = styled.div`
   padding-top: 100%; /* 1:1 정사각형 */
   background-color: #f5f5f5;
   overflow: hidden;
-  /* radius 관련 코드 삭제됨 */
   margin-bottom: 15px;
 
   img {
@@ -40,7 +39,6 @@ const ImageArea = styled.div`
   }
 `;
 
-// [수정됨] 교수님이 주신 스타일 적용
 const RankBadge = styled.div`
   position: absolute;
   top: 10px;
@@ -55,7 +53,7 @@ const RankBadge = styled.div`
   justify-content: center;
   align-items: center;
   z-index: 5;
-  border-radius: 4px; /* 요청하신 대로 추가 */
+  border-radius: 4px;
 `;
 
 const InfoArea = styled.div`
@@ -81,15 +79,38 @@ const ProductColor = styled.p`
   margin: 0;
 `;
 
-const Price = styled.p`
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #212a2f;
+// [수정] 가격 영역 래퍼 (할인 시 가로 배치 등을 위해)
+const PriceRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin: 5px 0;
 `;
 
-const SizeSection = styled.div`
+// [수정] 최종 판매가 (할인가)
+const FinalPrice = styled.p`
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #212a2f;
+  margin: 0;
 `;
+
+// [추가] 원가 (취소선)
+const OriginalPrice = styled.span`
+  font-size: 0.85rem;
+  color: #999;
+  text-decoration: line-through;
+  font-weight: 400;
+`;
+
+// [추가] 할인율 (빨간색 강조)
+const DiscountRate = styled.span`
+  font-size: 0.85rem;
+  color: #d32f2f;
+  font-weight: 700;
+`;
+
+const SizeSection = styled.div``;
 
 const SizeLabel = styled.p`
   font-size: 0.75rem;
@@ -124,6 +145,14 @@ const SizeBox = styled.span`
 export default function ProductCard({ item }) {
   if (!item) return null;
 
+  // 할인율이 있는지 확인 (0보다 크면 할인 중)
+  const hasDiscount = item.discountRate && item.discountRate > 0;
+  
+  // 할인가 계산 (원가 * (1 - 할인율/100))
+  const discountedPrice = hasDiscount 
+    ? item.price * (1 - item.discountRate / 100) 
+    : item.price;
+
   return (
     <CardWrapper>
       <Link to={`/products/${item.id}`}>
@@ -135,7 +164,23 @@ export default function ProductCard({ item }) {
         <InfoArea>
           <ProductName>{item.name}</ProductName>
           <ProductColor>{item.color}</ProductColor>
-          <Price>₩{item.price ? item.price.toLocaleString() : 0}</Price>
+          
+          {/* 가격 표시 로직 변경 */}
+          <PriceRow>
+            {hasDiscount ? (
+              <>
+                {/* 1. 할인율 */}
+                <DiscountRate>{item.discountRate}%</DiscountRate>
+                {/* 2. 최종 가격 (할인가) */}
+                <FinalPrice>₩{Math.round(discountedPrice).toLocaleString()}</FinalPrice>
+                {/* 3. 원가 (취소선) */}
+                <OriginalPrice>₩{item.price.toLocaleString()}</OriginalPrice>
+              </>
+            ) : (
+              // 할인이 없을 땐 그냥 가격만 표시
+              <FinalPrice>₩{item.price ? item.price.toLocaleString() : 0}</FinalPrice>
+            )}
+          </PriceRow>
 
           {item.sizes && item.sizes.length > 0 && (
             <SizeSection>

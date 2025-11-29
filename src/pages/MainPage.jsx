@@ -47,6 +47,7 @@ export default function MainPage() {
           id: p._id,
           name: p.name,
           price: p.price,
+          discountRate: p.discountRate,
           image: getImageUrl(p.images?.[0]),
           color: 'Classic Color',
           sizes: p.availableSizes

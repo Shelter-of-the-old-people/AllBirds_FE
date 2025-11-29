@@ -82,6 +82,7 @@ export default function RealTimePopular() {
           id: item._id, 
           name: item.name,
           price: item.price,
+          discountRate: item.discountRate,
           image: getImageUrl(item.images?.[0]), 
           color: item.colors?.[0] || '기본 색상', 
           rank: index + 1,

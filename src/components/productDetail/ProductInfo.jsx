@@ -114,10 +114,22 @@ const PriceRow = styled.div`
   margin-bottom: 24px;
 `;
 
-const Price = styled.span`
+const DiscountRate = styled.span`
+  color: #ff3b30;
+  font-weight: 700;
   font-size: 1.25rem;
-  color: #4a4a4a;
-  font-weight: 500;
+`;
+
+const FinalPrice = styled.span`
+  font-size: 1.25rem;
+  color: #212a2f;
+  font-weight: 700;
+`;
+
+const OriginalPrice = styled.span`
+  font-size: 1rem;
+  color: #999;
+  text-decoration: line-through;
 `;
 
 // 별점 표시 (데코레이션)
@@ -215,7 +227,6 @@ const FreeShippingMsg = styled.div`
   border-radius: 4px;
 `;
 
-// 아코디언 메뉴 스타일
 const AccordionWrapper = styled.div`
   margin-top: 40px;
   border-top: 1px solid #e0e0e0;
@@ -283,12 +294,16 @@ export default function ProductInfo({ product }) {
     }
   }, [product]);
 
-  const handleAddToCart = () => {
+const handleAddToCart = () => {
     if (!selectedSize) return alert("사이즈를 선택해주세요.");
-    addToCart(product._id, selectedSize, 1);
+    addToCart(product._id, selectedSize, 1, mainImgUrl); 
   };
 
   if (!product) return null;
+
+  const discountRate = product.discountRate || 0;
+  const originalPrice = product.price || 0;
+  const discountedPrice = originalPrice * (1 - discountRate / 100);
 
   return (
     <Wrapper>
@@ -327,7 +342,15 @@ export default function ProductInfo({ product }) {
       <InfoSection>
         <Title>{product.name}</Title>
         <PriceRow>
-            <Price>₩{product.price.toLocaleString()}</Price>
+          {discountRate > 0 ? (
+            <>
+              <DiscountRate>{discountRate}%</DiscountRate>
+              <FinalPrice>₩{Math.round(discountedPrice).toLocaleString()}</FinalPrice>
+              <OriginalPrice>₩{originalPrice.toLocaleString()}</OriginalPrice>
+            </>
+          ) : (
+            <FinalPrice>₩{originalPrice.toLocaleString()}</FinalPrice>
+          )}
         </PriceRow>
 
         <Description>{product.description}</Description>
@@ -347,7 +370,6 @@ export default function ProductInfo({ product }) {
           })}
         </ThumbnailList>
 
-        {/* 사이즈 선택 */}
         <SizeSection>
           <Label>
             사이즈 선택
@@ -365,7 +387,6 @@ export default function ProductInfo({ product }) {
           </SizeGrid>
         </SizeSection>
 
-        {/* 장바구니 버튼: 사이즈 미선택 시 흐리게 보이도록 처리 */}
         <AddToCartBtn 
             onClick={handleAddToCart}
             $disabled={!selectedSize}
@@ -377,10 +398,6 @@ export default function ProductInfo({ product }) {
         <FreeShippingMsg>
           무료 배송 및 30일 이내 무료 반품 제공
         </FreeShippingMsg>
-
-        {/* 아코디언 메뉴 */}
-
-
       </InfoSection>
     </Wrapper>
   );
