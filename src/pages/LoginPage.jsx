@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { api } from '../api/axios';
 
-// --- Styled Components ---
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -54,7 +53,6 @@ const LoginButton = styled.button`
   }
 `;
 
-// [추가] 테스트용 버튼 영역 스타일
 const TestButtonGroup = styled.div`
   margin-top: 2rem;
   display: flex;
@@ -86,16 +84,19 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  // 통합 로그인 처리 함수
   const performLogin = async (id, pw) => {
     try {
-      // API 호출
       const res = await api.post('/auth/login', { userId: id, password: pw });
       
       if (res.status === 200) {
-        alert(`${res.data.user.name}님 환영합니다!`);
-        // 로그인 성공 시 메인으로 이동 (또는 이전 페이지)
-        navigate('/');
+        const user = res.data.user;
+        alert(`${user.name}님 환영합니다!`);
+        
+        if (user.isAdmin) {
+          navigate('/admin');
+        } else {
+          navigate('/');
+        }
       }
     } catch (err) {
       console.error(err);
@@ -103,7 +104,6 @@ export default function LoginPage() {
     }
   };
 
-  // 폼 제출 핸들러 (수동 입력)
   const handleSubmit = (e) => {
     e.preventDefault();
     performLogin(userId, password);
@@ -129,7 +129,6 @@ export default function LoginPage() {
         <LoginButton type="submit">로그인</LoginButton>
       </Form>
 
-      {/* 👇 [추가] 개발 편의를 위한 임시 로그인 버튼 */}
       <TestButtonGroup>
         <TestButton type="button" onClick={() => performLogin('customer1', '1234')}>
           일반 고객 접속<br/>(customer1)

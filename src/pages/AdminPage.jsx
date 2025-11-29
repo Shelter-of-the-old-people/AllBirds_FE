@@ -1,8 +1,6 @@
 import styled from 'styled-components';
-import ProductManage from './components/ProductManage';
+import ProductManage from '../components/admin/ProductManage';
 
-// 사이드바가 없어졌으므로 flex 관련 설정 제거
-// 화면 전체 너비를 사용하되, 내용물이 너무 퍼지지 않게 max-width 설정
 const AdminContainer = styled.div`
   min-height: calc(100vh - 180px); /* 헤더+푸터 제외 높이 */
   background-color: #f4f6f8;
