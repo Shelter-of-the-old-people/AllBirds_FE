@@ -294,7 +294,7 @@ export default function ProductInfo({ product }) {
     }
   }, [product]);
 
-const handleAddToCart = () => {
+  const handleAddToCart = () => {
     if (!selectedSize) return alert("사이즈를 선택해주세요.");
     addToCart(product._id, selectedSize, 1, mainImgUrl); 
   };
@@ -392,7 +392,7 @@ const handleAddToCart = () => {
             $disabled={!selectedSize}
             disabled={!selectedSize}
         >
-            {selectedSize ? `장바구니 담기 - ₩${product.price.toLocaleString()}` : '사이즈를 선택해주세요'}
+            {selectedSize ? `장바구니 담기 · ₩${Math.round(discountedPrice).toLocaleString()} ${discountRate}% OFF` : '사이즈를 선택해주세요'}
         </AddToCartBtn>
         
         <FreeShippingMsg>
