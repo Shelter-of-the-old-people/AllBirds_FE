@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import styled from 'styled-components';
-// 분리한 컴포넌트 import
-import HeroBanner from '../components/HeroBanner';
-import ProductCard from '../components/ProductCard';
-import RealTimePopular from '../components/RealTimePopular';
+import { api, getImageUrl } from '../api/axios';
+import HeroBanner from '../components/mainPage/HeroBanner';
+import ProductCard from '../components/mainPage/ProductCard';
+import RealTimePopular from '../components/mainPage/RealTimePopular';
 
 const Container = styled.div`
   width: 100%;
@@ -42,38 +41,29 @@ export default function MainPage() {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    // json-server 데이터 호출
-    axios.get('http://localhost:4000/products')
+    api.get('/products') 
       .then(res => {
-        const bestSellers = res.data.filter(p => p.category === 'best-seller');
-        setProducts(bestSellers);
+        const formatted = res.data.map(p => ({
+          id: p._id,
+          name: p.name,
+          price: p.price,
+          image: getImageUrl(p.images?.[0]),
+          color: 'Classic Color',
+          sizes: p.availableSizes
+        }));
+        setProducts(formatted);
       })
-      .catch(err => console.error("MainPage Error:", err));
+      .catch(err => console.error(err));
   }, []);
 
   return (
     <Container>
-      {/* 1. Hero Banner 컴포넌트 재사용 */}
       <HeroBanner 
-        title="편안함, 그 이상의 가치"
-        subtitle="자연에서 얻은 소재로 만들어진 최고의 편안함을 경험하세요."
-        bgImage="https://cdn.allbirds.com/image/upload/f_auto,q_auto,w_1600/cms/3435t317X62Y35/345235.jpg"
+        title="슈퍼 블랙 프라이데이"
+        subtitle="연중 최대 혜택. UP TO 50% OFF."
+        bgImage="https://allbirds.co.kr/cdn/shop/files/blacksheep_dt_ac45895d-e31f-4b46-a9ed-754251e3d6a9_1366x.jpg?v=1763952872"
       />
-
-      {/* 2. Product List 섹션 */}
-      <Section>
-        <ProductList>
-          {products.map(product => (
-            /* ProductCard 컴포넌트 재사용 (props 전달) */
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </ProductList>
-        
-      </Section>
       <RealTimePopular />
-      
-      
-      {/* 3. (추가) Collections 섹션은 일단 그대로 두거나, 필요하면 별도 컴포넌트화 가능 */}
     </Container>
   );
 }

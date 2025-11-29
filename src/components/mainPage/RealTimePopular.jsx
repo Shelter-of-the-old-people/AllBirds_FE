@@ -1,15 +1,13 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import styled from 'styled-components';
 import ProductCard from './ProductCard';
-
-// --- Styled Components ---
+import { api, getImageUrl } from '../../api/axios';
 
 const SectionWrapper = styled.section`
   padding: 4rem 2rem;
   max-width: 1400px;
   margin: 0 auto;
-  position: relative; /* 버튼의 기준점 */
+  position: relative;
 `;
 
 const Title = styled.h2`
@@ -38,18 +36,15 @@ const ProductItem = styled.div`
   background-color: #f9f9f9;
 `;
 
-/* [수정됨] 슬라이드 버튼 (이미지 양옆 중앙 배치) */
 const SlideButton = styled.button`
   position: absolute;
-  /* 이미지 높이의 중간쯤 오도록 계산 (패딩 4rem + 이미지높이의 절반) */
   top: calc(4rem + 10vw); 
   transform: translateY(-50%);
-  
   background-color: white;
   border: 1px solid #ddd;
   width: 45px;
   height: 45px;
-  border-radius: 50%; /* 원형 버튼 */
+  border-radius: 50%;
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   z-index: 20;
@@ -66,16 +61,13 @@ const SlideButton = styled.button`
   }
 
   &:disabled {
-    opacity: 0; /* 갈 곳 없으면 숨김 */
+    opacity: 0;
     cursor: default;
   }
 
-  /* 좌우 위치 지정 */
   &.prev { left: 10px; }
   &.next { right: 10px; }
 `;
-
-// --- Component Implementation ---
 
 export default function RealTimePopular() {
   const [items, setItems] = useState([]);
@@ -84,9 +76,20 @@ export default function RealTimePopular() {
   const VISIBLE_COUNT = 5;
 
   useEffect(() => {
-    axios.get('http://localhost:4000/realTime')
-      .then(res => setItems(res.data))
-      .catch(err => console.error("실시간 데이터 로드 실패:", err));
+    api.get('/products/popular')
+      .then(res => {
+        const formattedData = res.data.map((item, index) => ({
+          id: item._id, 
+          name: item.name,
+          price: item.price,
+          image: getImageUrl(item.images?.[0]), 
+          color: item.colors?.[0] || '기본 색상', 
+          rank: index + 1,
+          sizes: item.availableSizes
+        }));
+        setItems(formattedData);
+      })
+      .catch(err => console.error(err));
   }, []);
 
   const nextSlide = () => {
@@ -105,7 +108,6 @@ export default function RealTimePopular() {
     <SectionWrapper>
       <Title>실시간 인기</Title>
       
-      {/* 버튼을 SliderContainer 밖, SectionWrapper 안으로 이동 */}
       <SlideButton 
         className="prev" 
         onClick={prevSlide} 

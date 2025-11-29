@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import styled from 'styled-components';
-import Header from '../components/Header';
-import Footer from '../components/Footer'; // 아래에서 만들 예정
+import Header from '../components/common/Header';
+import Footer from '../components/common/Footer';
 
 const Wrap = styled.div`
   width: 100%;
@@ -11,7 +11,7 @@ const Wrap = styled.div`
 `;
 
 const Content = styled.main`
-  flex: 1; /* 푸터가 바닥에 붙도록 */
+  flex: 1; 
 `;
 
 export default function MainLayout() {
@@ -19,7 +19,7 @@ export default function MainLayout() {
     <Wrap>
       <Header />
       <Content>
-        <Outlet /> {/* 여기에 MainPage 등 자식 라우트가 들어옵니다 */}
+        <Outlet />
       </Content>
       <Footer />
     </Wrap>
