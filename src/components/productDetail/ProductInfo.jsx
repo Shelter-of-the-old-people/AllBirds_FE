@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { api, getImageUrl } from '../../api/axios';
+import { useCart } from '../../context/CartContext';
 
 // --- Styled Components (High Fidelity Design) ---
 
@@ -274,6 +275,7 @@ const AccordionContent = styled.div`
 export default function ProductInfo({ product }) {
   const [selectedSize, setSelectedSize] = useState(null);
   const [mainImgUrl, setMainImgUrl] = useState('');
+  const { addToCart } = useCart();
 
   useEffect(() => {
     if (product?.images?.length > 0) {
@@ -281,57 +283,45 @@ export default function ProductInfo({ product }) {
     }
   }, [product]);
 
-  const handleAddToCart = async () => {
+  const handleAddToCart = () => {
     if (!selectedSize) return alert("사이즈를 선택해주세요.");
-
-    try {
-      await api.post('/cart', {
-        productId: product._id,
-        size: selectedSize,
-        quantity: 1
-      });
-      alert(`${product.name} (Size: ${selectedSize}) 장바구니에 담겼습니다!`);
-    } catch (err) {
-      console.error(err);
-      if (err.response?.status === 401) {
-        alert("로그인이 필요합니다.");
-      } else {
-        alert("오류가 발생했습니다.");
-      }
-    }
+    addToCart(product._id, selectedSize, 1);
   };
 
   if (!product) return null;
 
   return (
     <Wrapper>
-      <ImageSection>
-        <MainImage>
-          <img src={mainImgUrl} alt={product.name} />
-        </MainImage>
-                <AccordionWrapper>
-          <AccordionDetails>
-            <AccordionSummary>상세 정보</AccordionSummary>
-            <AccordionContent>
-              {product.detail || "이 제품은 편안함과 스타일을 동시에 만족시키는 최고의 데일리 슈즈입니다. 천연 소재를 사용하여 통기성이 뛰어나며, 하루 종일 신어도 발이 피로하지 않습니다."}
-            </AccordionContent>
-          </AccordionDetails>
-          
-          <AccordionDetails>
-            <AccordionSummary>지속 가능성</AccordionSummary>
-            <AccordionContent>
-              {product.sustainability || "우리는 탄소 발자국을 줄이기 위해 끊임없이 노력합니다. 이 제품은 재활용 소재와 친환경 공정을 통해 생산되었습니다."}
-            </AccordionContent>
-          </AccordionDetails>
-
-          <AccordionDetails>
-            <AccordionSummary>배송 및 반품</AccordionSummary>
-            <AccordionContent>
-              오후 2시 이전 주문 시 당일 출고됩니다. 착용 후에도 30일 이내라면 언제든지 무료 반품이 가능합니다. (단, 훼손 시 제외)
-            </AccordionContent>
-          </AccordionDetails>
-        </AccordionWrapper>
-
+        <ImageSection>
+            <MainImage>
+            <img src={mainImgUrl} alt={product.name} />
+            </MainImage>
+            <AccordionWrapper>
+                <AccordionDetails>
+                    <AccordionSummary>상세 정보</AccordionSummary>
+                    <AccordionContent>
+                    {product.detail || "이 제품은 편안함과 스타일을 동시에 만족시키는 최고의 데일리 슈즈입니다. 천연 소재를 사용하여 통기성이 뛰어나며, 하루 종일 신어도 발이 피로하지 않습니다."}
+                    </AccordionContent>
+                </AccordionDetails>
+                <AccordionDetails>
+                    <AccordionSummary>지속 가능성</AccordionSummary>
+                    <AccordionContent>
+                    {product.sustainability || "우리는 탄소 발자국을 줄이기 위해 끊임없이 노력합니다. 이 제품은 재활용 소재와 친환경 공정을 통해 생산되었습니다."}
+                    </AccordionContent>
+                </AccordionDetails>
+                <AccordionDetails>
+                    <AccordionSummary>세탁 장법 및 취급시 주의사항</AccordionSummary>
+                    <AccordionContent>
+                    {product.sustainability || "우리는 탄소 발자국을 줄이기 위해 끊임없이 노력합니다. 이 제품은 재활용 소재와 친환경 공정을 통해 생산되었습니다."}
+                    </AccordionContent>
+                </AccordionDetails>
+                <AccordionDetails>
+                    <AccordionSummary>배송 및 반품</AccordionSummary>
+                    <AccordionContent>
+                    오후 2시 이전 주문 시 당일 출고됩니다. 착용 후에도 30일 이내라면 언제든지 무료 반품이 가능합니다. (단, 훼손 시 제외)
+                    </AccordionContent>
+                </AccordionDetails>
+            </AccordionWrapper>
       </ImageSection>
 
       <InfoSection>

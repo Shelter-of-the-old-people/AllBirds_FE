@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { useCart } from '../../context/CartContext';
 
 // 1. 스타일 정의 (Styled Components)
 const HeaderWrapper = styled.header`
@@ -57,9 +58,25 @@ const UserActions = styled.div`
     font-size: 0.9rem;
   }
 `;
+const CartButton = styled.button`
+  font-size: 0.9rem;
+  font-weight: bold;
+  position: relative;
+  
+  span.badge {
+    background: #212a2f;
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: 4px;
+    vertical-align: top;
+  }
+`;
 
 // 2. 컴포넌트 구현
 export default function Header() {
+  const { toggleCart, cartCount } = useCart();
   return (
     <HeaderWrapper>
       {/* 로고 영역 */}
@@ -74,10 +91,12 @@ export default function Header() {
         <Link to="/kids">지속 가능성</Link>
       </Nav>
 
-      {/* 유저 액션 영역 (로그인, 장바구니) */}
       <UserActions>
         <Link to="/login">로그인</Link>
-        <Link to="/cart">장바구니</Link>
+        <CartButton onClick={toggleCart}>
+          장바구니
+          {cartCount > 0 && <span className="badge">{cartCount}</span>}
+        </CartButton>
       </UserActions>
     </HeaderWrapper>
   );

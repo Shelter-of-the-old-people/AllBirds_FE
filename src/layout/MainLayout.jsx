@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import styled from 'styled-components';
 import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
+import CartSidebar from '../components/common/CartSidebar';
 
 const Wrap = styled.div`
   width: 100%;
@@ -22,6 +23,7 @@ export default function MainLayout() {
         <Outlet />
       </Content>
       <Footer />
+      <CartSidebar />
     </Wrap>
   );
 }
