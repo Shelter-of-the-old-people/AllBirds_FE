@@ -3,7 +3,7 @@ import axios from 'axios';
 import styled from 'styled-components';
 import ProductDetailManage from './ProductDetailManage';
 
-// --- 옵션 데이터 정의 (필요에 따라 수정하세요) ---
+// --- 옵션 데이터 정의 ---
 const CATEGORY_OPTIONS = [
   { label: '라이프스타일', value: 'lifestyle' },
   { label: '슬립온', value: 'slip-on' }
@@ -31,7 +31,7 @@ const Form = styled.form`
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.5rem; /* 간격 조금 늘림 */
+  gap: 1.5rem;
 `;
 
 const InputGroup = styled.div`
@@ -63,7 +63,6 @@ const Select = styled.select`
   background-color: white;
 `;
 
-// 체크박스 그룹 스타일
 const CheckboxGroup = styled.div`
   display: flex;
   gap: 1.5rem;
@@ -118,12 +117,12 @@ export default function ProductManage() {
   const [products, setProducts] = useState([]);
   const [selectedProductId, setSelectedProductId] = useState(null); 
 
-  // [수정] categories를 배열([])로 초기화
   const [formData, setFormData] = useState({
     name: '', price: '', discountRate: 0,
-    categories: [], // 배열로 관리
-    materials: '',  // 문자열 (단일 선택)
-    availableSizes: ''
+    categories: [],
+    materials: '',
+    availableSizes: '',
+    description: ''
   });
   const [images, setImages] = useState(null);
 
@@ -140,21 +139,17 @@ export default function ProductManage() {
     fetchProducts();
   }, []);
 
-  // 일반 입력 핸들러
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // [신규] 카테고리 체크박스 핸들러
   const handleCategoryChange = (value, isChecked) => {
     if (isChecked) {
-      // 체크 시 배열에 추가
       setFormData(prev => ({
         ...prev,
         categories: [...prev.categories, value]
       }));
     } else {
-      // 체크 해제 시 배열에서 제거
       setFormData(prev => ({
         ...prev,
         categories: prev.categories.filter(cat => cat !== value)
@@ -169,7 +164,6 @@ export default function ProductManage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // 유효성 검사 (간단)
     if (formData.categories.length === 0) {
       return alert('카테고리를 최소 1개 이상 선택해주세요.');
     }
@@ -178,16 +172,13 @@ export default function ProductManage() {
     }
 
     const data = new FormData();
-    // 나머지 데이터 append
     data.append('name', formData.name);
     data.append('price', formData.price);
     data.append('discountRate', formData.discountRate);
     data.append('availableSizes', formData.availableSizes);
-    
-    // [중요] 배열이나 값들을 백엔드 포맷에 맞게 변환
-    // 백엔드는 콤마(,)로 구분된 문자열을 받아 split 처리하도록 되어있음
     data.append('categories', formData.categories.join(',')); 
-    data.append('materials', formData.materials); // 단일 값이므로 그대로 전송
+    data.append('materials', formData.materials);
+    data.append('description', formData.description); 
 
     if (images) {
       for (let i = 0; i < images.length; i++) {
@@ -202,15 +193,15 @@ export default function ProductManage() {
       });
       alert('상품이 등록되었습니다!');
       fetchProducts();
-      // 폼 초기화
+    
       setFormData({
         name: '', price: '', discountRate: 0,
-        categories: [], // 배열 초기화
+        categories: [],
         materials: '',
-        availableSizes: ''
+        availableSizes: '',
+        description: '' // 초기화
       });
       setImages(null);
-      // 파일 input 초기화 (DOM 접근 필요하지만 여기선 생략하거나 key 변경 기법 사용 가능)
     } catch (err) {
       alert('상품 등록 실패 (관리자 로그인이 필요할 수 있습니다)');
       console.error(err);
@@ -249,7 +240,6 @@ export default function ProductManage() {
           <Input type="number" name="discountRate" value={formData.discountRate} placeholder="0" onChange={handleChange} />
         </InputGroup>
 
-        {/* [변경] 카테고리: 체크박스 */}
         <InputGroup>
           <label>카테고리 (중복 선택 가능)</label>
           <CheckboxGroup>
@@ -266,7 +256,6 @@ export default function ProductManage() {
           </CheckboxGroup>
         </InputGroup>
 
-        {/* [변경] 소재: 셀렉트 박스 */}
         <InputGroup>
           <label>소재</label>
           <Select 
@@ -285,6 +274,16 @@ export default function ProductManage() {
         <InputGroup className="full-width">
           <label>가능 사이즈 (쉼표 구분)</label>
           <Input name="availableSizes" value={formData.availableSizes} placeholder="250,260,270,280" onChange={handleChange} required />
+        </InputGroup>
+
+        <InputGroup className="full-width">
+          <label>상품 설명</label>
+          <Input 
+            name="description" 
+            value={formData.description} 
+            placeholder="상품에 대한 간단한 설명을 입력하세요." 
+            onChange={handleChange} 
+          />
         </InputGroup>
 
         <InputGroup className="full-width">
@@ -311,7 +310,6 @@ export default function ProductManage() {
                     <strong>{p.name}</strong>
                   </div>
                   <span style={{ fontSize: '0.85rem', color: '#888' }}>
-                    {/* 배열을 예쁘게 표시 */}
                     {p.categories.join(', ')} / {p.materials.join(', ')}
                   </span>
                 </div>
