@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { api } from '../api/axios';
-import { useCart } from '../context/CartContext'; 
+// import { api } from '../api/axios'; // [삭제] AuthContext가 대신 함
+import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext'; // [추가] 1. AuthContext 가져오기
 
+// ... (스타일 코드는 기존과 동일) ...
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -84,17 +86,18 @@ export default function LoginPage() {
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const { fetchCart } = useCart(); 
+  const { fetchCart } = useCart();
+  const { login } = useAuth(); 
 
   const performLogin = async (id, pw) => {
     try {
-      const res = await api.post('/auth/login', { userId: id, password: pw });
+      const res = await login(id, pw); 
       
       if (res.status === 200) {
         const user = res.data.user;
         alert(`${user.name}님 환영합니다!`);
         
-        await fetchCart();
+        await fetchCart(); 
 
         if (user.isAdmin) {
           navigate('/admin');

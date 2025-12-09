@@ -3,7 +3,6 @@ import { Routes, Route } from 'react-router-dom';
 
 import MainLayout from './layout/MainLayout'; 
 
-// Pages
 import MainPage from './pages/MainPage'; 
 import ProductListPage from './pages/ProductListPage';
 import ProductDetailPage from './pages/ProductDetailPage';
@@ -11,11 +10,10 @@ import LoginPage from './pages/LoginPage';
 import AdminPage from './pages/AdminPage';
 
 import { CartProvider } from './context/CartContext';
-import { AuthProvider } from './context/AuthContext'; // [추가] AuthProvider 불러오기
+import { AuthProvider } from './context/AuthContext'; 
 
 function App() {
   return (
-    // [추가] AuthProvider로 감싸기
     <AuthProvider>
       <CartProvider>
         <Routes>

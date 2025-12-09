@@ -1,4 +1,3 @@
-// src/context/AuthContext.jsx
 import { createContext, useState, useEffect, useContext } from 'react';
 import { api } from '../api/axios';
 
@@ -30,7 +29,7 @@ export function AuthProvider({ children }) {
   const login = async (userId, password) => {
     const res = await api.post('/auth/login', { userId, password });
     setUser(res.data.user);
-    return res.data.user;
+    return res;
   };
 
   const logout = async () => {
