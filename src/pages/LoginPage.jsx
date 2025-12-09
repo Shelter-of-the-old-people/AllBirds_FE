@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { api } from '../api/axios';
+import { useCart } from '../context/CartContext'; 
 
 const Container = styled.div`
   display: flex;
@@ -83,6 +84,7 @@ export default function LoginPage() {
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const { fetchCart } = useCart(); 
 
   const performLogin = async (id, pw) => {
     try {
@@ -92,6 +94,8 @@ export default function LoginPage() {
         const user = res.data.user;
         alert(`${user.name}님 환영합니다!`);
         
+        await fetchCart();
+
         if (user.isAdmin) {
           navigate('/admin');
         } else {

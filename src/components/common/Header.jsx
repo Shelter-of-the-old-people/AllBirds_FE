@@ -1,8 +1,8 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; 
 import styled from 'styled-components';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext'; 
 
-// 1. 스타일 정의 (Styled Components)
 const HeaderWrapper = styled.header`
   display: flex;
   justify-content: space-between;
@@ -51,6 +51,7 @@ const Nav = styled.nav`
 const UserActions = styled.div`
   display: flex;
   gap: 1rem;
+  align-items: center;
   
   a {
     text-decoration: none;
@@ -58,10 +59,28 @@ const UserActions = styled.div`
     font-size: 0.9rem;
   }
 `;
+
+const LogoutButton = styled.button`
+  background: none;
+  border: none;
+  color: #212a2f;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
 const CartButton = styled.button`
   font-size: 0.9rem;
   font-weight: bold;
   position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
   
   span.badge {
     background: #212a2f;
@@ -74,25 +93,49 @@ const CartButton = styled.button`
   }
 `;
 
-// 2. 컴포넌트 구현
 export default function Header() {
-  const { toggleCart, cartCount } = useCart();
+  const { toggleCart, cartCount, fetchCart } = useCart(); 
+  const { user, logout } = useAuth(); 
+  const navigate = useNavigate(); 
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      alert("로그아웃 되었습니다.");
+      
+      await fetchCart();
+      
+      navigate('/login');
+    } catch (err) {
+      console.error("로그아웃 실패", err);
+    }
+  };
+
   return (
     <HeaderWrapper>
-      {/* 로고 영역 */}
       <Logo>
         <Link to="/">Allbirds</Link>
       </Logo>
 
-      {/* 메뉴 영역 */}
       <Nav>
-        <Link to="/men">슈퍼 블랙 프라이데이</Link>
-        <Link to="/women">매장 위치</Link>
-        <Link to="/kids">지속 가능성</Link>
+        <Link to="/products">슈퍼 블랙 프라이데이</Link>
+        <Link to="/products">매장 위치</Link>
+        <Link to="/products">지속 가능성</Link>
       </Nav>
 
       <UserActions>
-        <Link to="/login">로그인</Link>
+        {user ? (
+          <>
+            <span style={{ fontSize: '0.9rem', color: '#555' }}>
+              <b>{user.name}</b>님
+            </span>
+            {user.isAdmin && <Link to="/admin">관리자</Link>}
+            <LogoutButton onClick={handleLogout}>로그아웃</LogoutButton>
+          </>
+        ) : (
+          <Link to="/login">로그인</Link>
+        )}
+
         <CartButton onClick={toggleCart}>
           장바구니
           {cartCount > 0 && <span className="badge">{cartCount}</span>}
