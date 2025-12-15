@@ -8,6 +8,7 @@ import ProductListPage from './pages/ProductListPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import LoginPage from './pages/LoginPage';
 import AdminPage from './pages/AdminPage';
+import MyPage from './pages/MyPage';
 
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext'; 
@@ -26,6 +27,8 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               
               <Route path="/admin" element={<AdminPage />} />
+
+              <Route path="/mypage" element={<MyPage />} />
             </Route>
             
             <Route path="*" element={<div>페이지를 찾을 수 없습니다.</div>} />
