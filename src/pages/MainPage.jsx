@@ -4,6 +4,9 @@ import { api, getImageUrl } from '../api/axios';
 import HeroBanner from '../components/mainPage/HeroBanner';
 import ProductCard from '../components/mainPage/ProductCard';
 import RealTimePopular from '../components/mainPage/RealTimePopular';
+import SustainabilitySection from '../components/mainPage/SustainabilitySection';
+import EmailSubscription from '../components/mainPage/EmailSubscription';
+import NewArrivals from '../components/mainPage/NewArrivals';
 
 const Container = styled.div`
   width: 100%;
@@ -59,12 +62,29 @@ export default function MainPage() {
 
   return (
     <Container>
+      {/* 1. Hero Banner 컴포넌트 재사용 */}
       <HeroBanner 
-        title="슈퍼 블랙 프라이데이"
-        subtitle="연중 최대 혜택. UP TO 50% OFF."
-        bgImage="https://allbirds.co.kr/cdn/shop/files/blacksheep_dt_ac45895d-e31f-4b46-a9ed-754251e3d6a9_1366x.jpg?v=1763952872"
+        bgImage="https://allbirds.co.kr/cdn/shop/files/blacksheep_dt_ac45895d-e31f-4b46-a9ed-754251e3d6a9_2560x.jpg?v=1763952872"
       />
+
+      {/* 2. Product List 섹션 */}
+      <Section>
+        <ProductList>
+          {products.map(product => (
+            /* ProductCard 컴포넌트 재사용 (props 전달) */
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </ProductList>
+        
+      </Section>
       <RealTimePopular />
-    </Container>
+
+      <SustainabilitySection />
+      
+      <EmailSubscription />
+
+      <NewArrivals />
+
+      </Container>
   );
 }

@@ -1,7 +1,23 @@
+// src/components/ProductCard.js
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
-// --- Styled Components ---
+// --- [핵심 추가] 이미지 경로 변환 함수 ---
+// 로컬 경로(/uploads)인 경우 백엔드 주소를 붙여주고, 외부 링크(http)는 그대로 둡니다.
+const getImageUrl = (imagePath) => {
+  if (!imagePath) return 'https://via.placeholder.com/300?text=No+Image'; // 이미지가 없을 때 대체 이미지
+  
+  // 외부 링크(https://...)는 그대로 반환
+  if (imagePath.startsWith('http')) {
+    return imagePath;
+  }
+  
+  // 로컬 파일(/uploads/...)은 백엔드 서버 주소(http://localhost:5000)를 붙임
+  // ※ 만약 백엔드 포트가 5000이 아니라면 여기를 수정하세요.
+  return `http://localhost:5000${imagePath}`;
+};
+
+// --- Styled Components (기존 스타일 유지) ---
 
 const CardWrapper = styled.div`
   display: flex;
@@ -23,18 +39,19 @@ const CardWrapper = styled.div`
 
 const ImageArea = styled.div`
   position: relative;
-  width: 100%;
+  width: 100%;       /* [수정] 부모 컨테이너에 맞춤 */
   padding-top: 100%; /* 1:1 정사각형 */
   background-color: #f5f5f5;
   overflow: hidden;
   margin-bottom: 15px;
+  border-radius: 8px; /* 둥근 모서리 복구 권장 (선택사항) */
 
   img {
     position: absolute;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    object-fit: contain;
-    mix-blend-mode: multiply;
+    object-fit: cover; /* [수정] contain보다 cover가 꽉 차게 보여서 예쁨 */
+    /* mix-blend-mode: multiply; -> 배경이 흰색이 아니면 이미지가 어두워질 수 있어 제거 고려 */
     transition: transform 0.3s ease;
   }
 `;
@@ -79,35 +96,11 @@ const ProductColor = styled.p`
   margin: 0;
 `;
 
-// [수정] 가격 영역 래퍼 (할인 시 가로 배치 등을 위해)
-const PriceRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 5px 0;
-`;
-
-// [수정] 최종 판매가 (할인가)
-const FinalPrice = styled.p`
+const Price = styled.p`
   font-size: 0.9rem;
-  font-weight: 700;
+  font-weight: 500;
   color: #212a2f;
-  margin: 0;
-`;
-
-// [추가] 원가 (취소선)
-const OriginalPrice = styled.span`
-  font-size: 0.85rem;
-  color: #999;
-  text-decoration: line-through;
-  font-weight: 400;
-`;
-
-// [추가] 할인율 (빨간색 강조)
-const DiscountRate = styled.span`
-  font-size: 0.85rem;
-  color: #d32f2f;
-  font-weight: 700;
+  margin: 5px 0;
 `;
 
 const SizeSection = styled.div``;
@@ -128,10 +121,11 @@ const SizeList = styled.div`
 
 const SizeBox = styled.span`
   font-size: 0.8rem;
-  color: #555;
+  color: #212a2f;
   border: 1px solid #e0e0e0;
-  padding: 4px 8px;
-  min-width: 32px;
+  background-color: #e5e7eb; /* 오타 수정: e5e7eb -> #e5e7eb */
+  padding: 4px 4px;
+  min-width: 28px; /* 최소 너비 지정 */
   text-align: center;
   transition: all 0.2s;
 
@@ -145,48 +139,40 @@ const SizeBox = styled.span`
 export default function ProductCard({ item }) {
   if (!item) return null;
 
-  // 할인율이 있는지 확인 (0보다 크면 할인 중)
-  const hasDiscount = item.discountRate && item.discountRate > 0;
+  // [핵심 수정] 
+  // 1. item.image(문자열)가 있으면 쓰고, 없으면 item.images(배열)의 첫 번째를 씁니다.
+  const rawImage = item.image || (item.images && item.images.length > 0 ? item.images[0] : null);
   
-  // 할인가 계산 (원가 * (1 - 할인율/100))
-  const discountedPrice = hasDiscount 
-    ? item.price * (1 - item.discountRate / 100) 
-    : item.price;
+  // 2. getImageUrl 함수를 통해 http://localhost:5000을 붙인 최종 URL을 만듭니다.
+  const imageUrl = getImageUrl(rawImage);
+
+  // [추가] availableSizes 처리 (DB 필드명 매칭)
+  // item.sizes가 있으면 쓰고, 없으면 item.availableSizes를 씁니다.
+  const sizeList = item.sizes || item.availableSizes || [];
 
   return (
     <CardWrapper>
-      <Link to={`/products/${item.id}`}>
+      {/* id가 있으면 링크 연결 */}
+      <Link to={`/products/${item.id || item._id}`}>
         <ImageArea>
           {item.rank && <RankBadge>{item.rank}</RankBadge>}
-          <img src={item.image} alt={item.name} />
+          {/* src에 변환된 imageUrl 사용 */}
+          <img src={imageUrl} alt={item.name} />
         </ImageArea>
 
         <InfoArea>
           <ProductName>{item.name}</ProductName>
-          <ProductColor>{item.color}</ProductColor>
-          
-          {/* 가격 표시 로직 변경 */}
-          <PriceRow>
-            {hasDiscount ? (
-              <>
-                {/* 1. 할인율 */}
-                <DiscountRate>{item.discountRate}%</DiscountRate>
-                {/* 2. 최종 가격 (할인가) */}
-                <FinalPrice>₩{Math.round(discountedPrice).toLocaleString()}</FinalPrice>
-                {/* 3. 원가 (취소선) */}
-                <OriginalPrice>₩{item.price.toLocaleString()}</OriginalPrice>
-              </>
-            ) : (
-              // 할인이 없을 땐 그냥 가격만 표시
-              <FinalPrice>₩{item.price ? item.price.toLocaleString() : 0}</FinalPrice>
-            )}
-          </PriceRow>
+          <ProductColor>{item.color || item.material}</ProductColor> {/* color가 없으면 material 표시 */}
+          <Price>
+            {/* 할인율이 있으면 할인가 계산해서 표시하는 로직 추가 가능 */}
+             ₩{item.price ? item.price.toLocaleString() : 0}
+          </Price>
 
-          {item.sizes && item.sizes.length > 0 && (
+          {sizeList.length > 0 && (
             <SizeSection>
               <SizeLabel>주문 가능 사이즈</SizeLabel>
               <SizeList>
-                {item.sizes.map((size, idx) => (
+                {sizeList.map((size, idx) => (
                   <SizeBox key={idx}>{size}</SizeBox>
                 ))}
               </SizeList>

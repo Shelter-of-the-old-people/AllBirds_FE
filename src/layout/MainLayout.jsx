@@ -9,6 +9,7 @@ const Wrap = styled.div`
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: #f5f5f5;
 `;
 
 const Content = styled.main`
