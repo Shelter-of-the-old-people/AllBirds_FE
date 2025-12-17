@@ -11,14 +11,13 @@ const TopFilterBar = styled.div` display: flex; align-items: center; gap: 24px; 
 // [수정 1] margin-left: auto 추가 -> 이 요소 앞의 여백을 모두 차지하여 우측 끝으로 밀어냄
 const ResetWrapper = styled.div` 
   display: flex; align-items: center; justify-content: flex-end; 
-  height: 40px; min-width: 100px; padding: 0 10px; 
+  height: 50px; min-width: 100px; padding: 0 10px; 
   background-color: white; border: 1px solid #e0e0e0; border-radius: 2px; 
-  margin-left: auto; /* 핵심: 우측 정렬 */
   transition: border-color 0.2s; 
   &:hover { border-color: #212121; } 
 `;
 
-const ResetButton = styled.button` width: auto; height: 100%; background: transparent; border: 1px solid black; padding: 0; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; font-weight: 500; color: #212121; cursor: pointer; `;
+const ResetButton = styled.button` width: 70px; height: 100%; background: transparent; border: 1px solid black; padding: 0; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; font-weight: 500; color: #212121; cursor: pointer; `;
 const CategoryTab = styled.button` background: transparent; border: none; padding: 0; height: 100%; cursor: pointer; font-size: 15px; font-weight: ${props => (props.$active ? '700' : '400')}; color: ${props => (props.$active ? '#212121' : '#757575')}; display: flex; align-items: center; &:hover { color: #212121; } `;
 const TabText = styled.span` position: relative; padding-bottom: 4px; &::after { content: ''; position: absolute; left: 0; bottom: 0; width: 100%; height: 2px; background-color: #212121; transform: scaleX(${props => (props.$active ? 1 : 0)}); transform-origin: center; transition: transform 0.2s ease-in-out; } `;
 const ContentLayout = styled.div` display: flex; gap: 40px; `;
@@ -142,6 +141,11 @@ const ProductListPage = () => {
         <p>자연 소재로 만든 편안한 신발을 만나보세요.</p>
         
         <TopFilterBar>
+
+          {/* [수정 5] ResetWrapper를 맨 뒤로 이동 (margin-left: auto가 작동하도록) */}
+          <ResetWrapper>
+            <ResetButton onClick={handleResetCategory}>신발 ✕</ResetButton>
+          </ResetWrapper>
           {/* [수정 4] 카테고리 탭을 먼저 렌더링 */}
           {['신제품', '라이프스타일', '액티브', '세일', '슬립온', '슬리퍼'].map(cat => (
             <CategoryTab 
@@ -153,10 +157,7 @@ const ProductListPage = () => {
             </CategoryTab>
           ))}
 
-          {/* [수정 5] ResetWrapper를 맨 뒤로 이동 (margin-left: auto가 작동하도록) */}
-          <ResetWrapper>
-            <ResetButton onClick={handleResetCategory}>신발 ✕</ResetButton>
-          </ResetWrapper>
+
         </TopFilterBar>
       </HeaderSection>
 
