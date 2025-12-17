@@ -198,10 +198,12 @@ export default function Header() {
     <HeaderWrapper onMouseLeave={closeMenu}>
       <NavContainer>
         {/* 로고 영역 */}
+        <Link to="/">
         <BrandLogo 
           src="https://allbirds.co.kr/cdn/shop/files/allbirds-logo-fb.webp?v=1693932666" 
-          alt="Allbirds Logo" 
+          alt="Allbirds Logo"
         />
+        </Link>
 
         {/* 메뉴 영역 */}
         <Nav>
