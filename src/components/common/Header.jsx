@@ -299,7 +299,6 @@ export default function Header() {
           <MenuColumn $isOpen={isMenuOpen}>
             <ColumnHeader>스토리</ColumnHeader>
             <LinkList>
-              <LinkItem>M0.0NSHOT</LinkItem>
               <LinkItem>올멤버스</LinkItem>
               <LinkItem>올버즈 앰배서더</LinkItem>
               <LinkItem>ReRun</LinkItem>

@@ -181,7 +181,7 @@ const ProductListPage = () => {
             images: item.images || [], 
             stock: stockObj, 
             isSale: (item.discountRate || 0) > 0,
-            ranking: item.ranking || 999, 
+            soldCount: item.soldCount || 0,
             createdAt: item.createdAt || 0,
           };
         });
@@ -200,8 +200,8 @@ const ProductListPage = () => {
     switch (sortOption) {
       case 'lowPrice': items.sort((a, b) => a.price - b.price); break;
       case 'highPrice': items.sort((a, b) => b.price - a.price); break;
-      case 'sales': items.sort((a, b) => a.ranking - b.ranking); break;
-      case 'newest': items.sort((a, b) => b.id - a.id); break;
+      case 'sales': items.sort((a, b) => b.soldCount - a.soldCount); break;
+      case 'newest': items.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); break;
       case 'recommend': default: break;
     }
     return items;
