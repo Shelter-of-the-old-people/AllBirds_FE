@@ -1,8 +1,8 @@
-// src/components/Header.js
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styled, { keyframes, css } from 'styled-components';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext'; // [Main 기능] AuthContext 추가
 
 // --- [애니메이션] ---
 const slideRight = keyframes`
@@ -32,12 +32,12 @@ const NavContainer = styled.div`
 `;
 
 const BrandLogo = styled.img`
-  height: 70px;        /* 로고 높이 설정 (조절 가능) */
+  height: 70px;        /* 로고 높이 설정 */
   width: auto;         /* 비율 유지 */
-  
   display: block;      /* 블록 요소로 처리 */
   cursor: pointer;
 `;
+
 const Nav = styled.nav`
   display: flex;
   gap: 2rem;
@@ -66,10 +66,10 @@ const Nav = styled.nav`
   }
 `;
 
-/* --- [수정됨] 유저 액션 (아이콘 스타일) --- */
+/* 유저 액션 (아이콘 스타일) */
 const UserActions = styled.div`
   display: flex;
-  gap: 1.5rem; /* 아이콘 간격 조정 */
+  gap: 1.5rem; 
   align-items: center;
   
   /* 링크 및 버튼 공통 스타일 */
@@ -96,14 +96,30 @@ const UserActions = styled.div`
   }
 `;
 
-/* --- [수정됨] 장바구니 버튼 (뱃지 위치 조정) --- */
+/* [Main 기능] 로그아웃 버튼 스타일 추가 */
+const LogoutText = styled.button`
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #767676;
+  background: none;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:hover {
+    text-decoration: underline;
+    color: #212121;
+  }
+`;
+
+/* 장바구니 버튼 (뱃지 위치 조정) */
 const CartButton = styled.button`
   position: relative;
   
   span.badge {
     position: absolute;
-    top: -6px;    /* 아이콘 위로 살짝 올림 */
-    right: -8px;  /* 아이콘 오른쪽으로 뺌 */
+    top: -6px;    
+    right: -8px;  
     background: #212a2f;
     color: white;
     font-size: 0.65rem;
@@ -115,7 +131,7 @@ const CartButton = styled.button`
   }
 `;
 
-/* --- [서브 메뉴 스타일] (기존 유지) --- */
+/* --- [서브 메뉴 스타일] (Horim 디자인 유지) --- */
 const SubMenuContainer = styled.div`
   position: absolute;
   top: 100%;
@@ -181,28 +197,45 @@ const LinkItem = styled.li`
 
 // --- [컴포넌트 구현] ---
 export default function Header() {
-  const { toggleCart, cartCount } = useCart();
+  const { toggleCart, cartCount, fetchCart } = useCart();
+  const { user, logout } = useAuth(); // [Main 기능] Auth 훅 사용
+  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const openMenu = () => setIsMenuOpen(true);
   const closeMenu = () => setIsMenuOpen(false);
 
+  // [Main 기능] 로그아웃 핸들러
+  const handleLogout = async () => {
+    try {
+      await logout(); 
+      alert("로그아웃 되었습니다.");
+      await fetchCart(); 
+      navigate('/login');
+    } catch (err) {
+      console.error("로그아웃 실패", err);
+    }
+  };
+
   // 아이콘 URL 상수 정의
   const ICONS = {
     search: "https://cdn-icons-png.flaticon.com/128/2319/2319177.png",
-    login: "https://cdn-icons-png.flaticon.com/128/2815/2815428.png",
+    // 로그인 안 했을 때 / 했을 때 동일한 아이콘 사용 (기능만 분기)
+    user: "https://cdn-icons-png.flaticon.com/128/2815/2815428.png", 
     cart: "https://cdn-icons-png.flaticon.com/128/3034/3034002.png"
   };
+
+  const isAdmin = user?.isAdmin;
 
   return (
     <HeaderWrapper onMouseLeave={closeMenu}>
       <NavContainer>
         {/* 로고 영역 */}
         <Link to="/">
-        <BrandLogo 
-          src="https://allbirds.co.kr/cdn/shop/files/allbirds-logo-fb.webp?v=1693932666" 
-          alt="Allbirds Logo"
-        />
+          <BrandLogo 
+            src="https://allbirds.co.kr/cdn/shop/files/allbirds-logo-fb.webp?v=1693932666" 
+            alt="Allbirds Logo"
+          />
         </Link>
 
         {/* 메뉴 영역 */}
@@ -218,15 +251,32 @@ export default function Header() {
           </div>
         </Nav>
 
-        {/* [수정됨] 유저 액션: 텍스트 대신 아이콘 적용 */}
+        {/* 유저 액션 */}
         <UserActions>
           <Link to="/search" onMouseEnter={closeMenu}>
             <img src={ICONS.search} alt="검색" />
           </Link>
           
-          <Link to="/login" onMouseEnter={closeMenu}>
-            <img src={ICONS.login} alt="로그인" />
-          </Link>
+          {/* [병합된 로직] 로그인 여부에 따라 링크 변경 */}
+          {user ? (
+            <>
+              {/* 로그인 상태: 마이페이지 or 관리자페이지 */}
+              <Link 
+                to={isAdmin ? "/admin" : "/mypage"} 
+                onMouseEnter={closeMenu}
+                title={isAdmin ? "관리자 페이지" : "마이페이지"}
+              >
+                <img src={ICONS.user} alt="마이페이지" />
+              </Link>
+              {/* 로그아웃 버튼 추가 */}
+              <LogoutText onClick={handleLogout}>로그아웃</LogoutText>
+            </>
+          ) : (
+            // 로그아웃 상태: 로그인 페이지
+            <Link to="/login" onMouseEnter={closeMenu} title="로그인">
+              <img src={ICONS.user} alt="로그인" />
+            </Link>
+          )}
           
           <CartButton onClick={toggleCart} onMouseEnter={closeMenu}>
             <img src={ICONS.cart} alt="장바구니" />
@@ -234,7 +284,7 @@ export default function Header() {
           </CartButton>
         </UserActions>
 
-        {/* 서브 메뉴 (기존 동일) */}
+        {/* 서브 메뉴 (Horim 디자인) */}
         <SubMenuContainer $isOpen={isMenuOpen}>
           <MenuColumn $isOpen={isMenuOpen}>
             <ColumnHeader>올버즈</ColumnHeader>

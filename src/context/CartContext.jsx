@@ -1,7 +1,7 @@
-// src/context/CartContext.jsx
 import { createContext, useState, useContext, useEffect } from 'react';
 import { api } from '../api/axios';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from './AuthContext'; 
 
 const CartContext = createContext();
 
@@ -11,7 +11,15 @@ export function CartProvider({ children }) {
   const [cartCount, setCartCount] = useState(0);
   const navigate = useNavigate();
 
+  const { user, loading } = useAuth(); 
+
   const fetchCart = async () => {
+    if (!user) {
+        setCartItems([]);
+        setCartCount(0);
+        return; 
+    }
+
     try {
       const res = await api.get('/cart');
       setCartItems(res.data.items || []);
@@ -24,12 +32,19 @@ export function CartProvider({ children }) {
     }
   };
 
-  useEffect(() => { fetchCart(); }, []);
+  useEffect(() => {
+    if (!loading) {
+      if (user) {
+        fetchCart();
+      } else {
+        setCartItems([]);
+        setCartCount(0);
+      }
+    }
+  }, [user, loading]); 
 
-  // [수정] selectedImage 인자 추가
   const addToCart = async (productId, size, quantity = 1, selectedImage) => {
     try {
-      // API로 이미지 정보 함께 전송
       await api.post('/cart', { productId, size, quantity, selectedImage });
       await fetchCart();
       setIsCartOpen(true);
@@ -74,11 +89,17 @@ export function CartProvider({ children }) {
 
   const toggleCart = () => setIsCartOpen(prev => !prev);
 
+  const clearCart = () => {
+      setCartItems([]);
+      setCartCount(0);
+  };
+
   return (
     <CartContext.Provider value={{ 
       cartItems, isCartOpen, cartCount, 
       setIsCartOpen, toggleCart, addToCart, 
-      updateQuantity, removeFromCart, checkout, fetchCart 
+      updateQuantity, removeFromCart, checkout, fetchCart, 
+      clearCart // 내보내기
     }}>
       {children}
     </CartContext.Provider>

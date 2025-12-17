@@ -1,147 +1,207 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { api } from '../../api/axios';
 
-const Wrapper = styled.div`
+const SectionContainer = styled.div`
   margin-top: 4rem;
   padding-top: 2rem;
-  border-top: 1px solid #eee;
+  border-top: 1px solid #ddd;
 `;
 
-const Header = styled.div`
+const SectionHeader = styled.div`
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  h2 { font-size: 1.5rem; font-weight: 700; }
-`;
-
-const ReviewForm = styled.div`
-  background: #f9f9f9;
-  padding: 1.5rem;
-  border-radius: 8px;
+  justify-content: center;
   margin-bottom: 2rem;
 `;
 
-const RatingSelect = styled.select`
-  padding: 0.5rem;
-  margin-bottom: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+const AverageBox = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: flex-end;
 `;
 
-const TextArea = styled.textarea`
-  width: 100%;
-  height: 80px;
-  padding: 0.8rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  resize: none;
-  margin-bottom: 1rem;
+const Average = styled.div`
+  font-size: 48px;
+  font-weight: 700; /* 숫자 좀 더 굵게 */
+  color: #212a2f;
 `;
 
-const SubmitBtn = styled.button`
-  background-color: #212a2f;
-  color: white;
-  padding: 0.5rem 1.5rem;
-  border-radius: 4px;
-  font-weight: bold;
+const BigStar = styled.div`
+  display:flex;
+  flex-direction: column;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #212a2f;
+  
+  span.star {
+    color: #ffae00ff; /* 별 색상 */
+    margin-right: 5px;
+    letter-spacing: -2px; /* 별 사이 간격 좁히기 */
+  }
+`;
+
+const ReviewCount = styled.span`
+  font-size: 0.9rem;
+  margin-top: 5px;
+  color: #666;
+  font-weight: 400;
 `;
 
 const ReviewList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
 `;
 
 const ReviewItem = styled.div`
+  padding: 2rem 0;
   border-bottom: 1px solid #eee;
-  padding-bottom: 1.5rem;
-  
-  .rating { color: #f5a623; font-weight: bold; margin-bottom: 0.5rem; }
-  .user { font-weight: 700; margin-right: 0.5rem; font-size: 0.9rem; }
-  .date { color: #888; font-size: 0.8rem; }
-  .content { margin-top: 0.5rem; line-height: 1.4; }
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+const StarRating = styled.div`
+  color: #ffae00ff; /* 개별 리뷰 별 색상도 통일 */
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+`;
+
+const ReviewTitle = styled.h4`
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #212a2f;
+  margin: 0;
+`;
+
+const MetaData = styled.div`
+  font-size: 0.85rem;
+  color: #888;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+
+  span.divider {
+    width: 1px;
+    height: 10px;
+    background: #ccc;
+  }
+`;
+
+const ReviewContent = styled.p`
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #444;
+  margin-top: 0.5rem;
+  white-space: pre-line; /* 줄바꿈 반영 */
+`;
+
+const EmptyState = styled.div`
+  text-align: center;
+  padding: 3rem 0;
+  color: #999;
+`;
+
+const ReviewTitleContainer = styled.div`
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-direction: row;
+`;
+
+const ReviewHeaderContainer = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
 `;
 
 export default function ReviewSection({ productId }) {
   const [reviews, setReviews] = useState([]);
-  const [rating, setRating] = useState(5);
-  const [content, setContent] = useState("");
-
-  const fetchReviews = async () => {
-    try {
-      const res = await api.get(`/reviews/${productId}`);
-      setReviews(res.data);
-    } catch (err) {
-      console.error("후기 로드 실패", err);
-    }
-  };
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (productId) fetchReviews();
+    api.get(`/reviews/${productId}`)
+      .then(res => {
+        setReviews(res.data); 
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setLoading(false);
+      });
   }, [productId]);
 
-  const handleSubmit = async () => {
-    if (!content.trim()) return alert("후기 내용을 입력해주세요.");
-
-    try {
-      await api.post('/reviews', {
-        productId,
-        rating: Number(rating),
-        content
-      });
-      alert("후기가 등록되었습니다.");
-      setContent("");
-      fetchReviews(); 
-    } catch (err) {
-      alert(err.response?.data?.message || "후기 등록 실패");
-    }
+  const calculateAverage = () => {
+    if (reviews.length === 0) return 0;
+    const sum = reviews.reduce((acc, curr) => acc + curr.rating, 0);
+    return (sum / reviews.length).toFixed(1);
   };
 
-  return (
-    <Wrapper>
-      <Header>
-        <h2>구매 후기</h2>
-        <span>({reviews.length}개)</span>
-      </Header>
+  const renderStars = (rating) => {
+    const score = rating;
+    const fullStars = Math.floor(score);
+    
+    const hasHalfStar = (score - fullStars) >= 0.5; 
+    
+    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
 
-      {/* 후기 작성 영역 */}
-      <ReviewForm>
-        <div style={{ marginBottom: '10px' }}>
-          <label style={{ marginRight: '10px', fontWeight: 'bold' }}>별점:</label>
-          <RatingSelect value={rating} onChange={(e) => setRating(e.target.value)}>
-            <option value="5">★★★★★ (5점)</option>
-            <option value="4">★★★★ (4점)</option>
-            <option value="3">★★★ (3점)</option>
-            <option value="2">★★ (2점)</option>
-            <option value="1">★ (1점)</option>
-          </RatingSelect>
-        </div>
-        <TextArea 
-          placeholder="이 제품을 구매하셨나요? 후기를 남겨주세요."
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-        />
-        <SubmitBtn onClick={handleSubmit}>후기 등록</SubmitBtn>
-      </ReviewForm>
+    return (
+      <>
+        {'★'.repeat(fullStars)}
+        {hasHalfStar && '⯨'}
+        {'☆'.repeat(emptyStars)}
+      </>
+    );
+  };
+
+  if (loading) return <div>후기 로딩 중...</div>;
+
+  const average = calculateAverage();
+
+  return (
+    <SectionContainer>
+      <SectionHeader>
+        <AverageBox>
+          <Average>
+            {average}
+          </Average>
+          <BigStar>
+            <span className="star">{renderStars(average)}</span>
+            <ReviewCount>{reviews.length}건의 리뷰 분석 결과입니다.</ReviewCount>
+          </BigStar>
+        </AverageBox>
+      </SectionHeader>
 
       <ReviewList>
         {reviews.length === 0 ? (
-          <p style={{ color: '#888', textAlign: 'center' }}>아직 작성된 후기가 없습니다.</p>
+          <EmptyState>아직 등록된 후기가 없습니다.</EmptyState>
         ) : (
-          reviews.map((review) => (
+          reviews.map(review => (
             <ReviewItem key={review._id}>
-              <div className="rating">{'★'.repeat(review.rating)}</div>
-              <div>
-                <span className="user">{review.userId?.name || '익명'}</span>
-                <span className="date">{new Date(review.createdAt).toLocaleDateString()}</span>
-              </div>
-              <p className="content">{review.content}</p>
+              <ReviewHeaderContainer>
+                <ReviewTitleContainer>
+                  <StarRating>{renderStars(review.rating)}</StarRating>
+                  <ReviewTitle>{review.title}</ReviewTitle>
+                </ReviewTitleContainer>
+                <span>{new Date(review.createdAt).toLocaleDateString()}</span>
+              </ReviewHeaderContainer>
+
+              <MetaData>
+                <span>{review.userId?.name || '익명'}</span> 
+                <span className="divider"></span>
+              </MetaData>
+              
+              <ReviewContent>{review.content}</ReviewContent>
             </ReviewItem>
           ))
         )}
       </ReviewList>
-    </Wrapper>
+    </SectionContainer>
   );
 }
