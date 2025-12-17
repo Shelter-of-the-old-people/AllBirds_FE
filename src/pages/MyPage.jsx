@@ -13,6 +13,7 @@ const Container = styled.div`
   display: flex;
   gap: 2rem;
   min-height: 80vh;
+  background-color: #f8f8f8;
 
   @media (max-width: 768px) {
     flex-direction: column;

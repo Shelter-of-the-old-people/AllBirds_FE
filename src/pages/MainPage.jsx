@@ -10,6 +10,7 @@ import NewArrivals from '../components/mainPage/NewArrivals';
 
 const Container = styled.div`
   width: 100%;
+  background-color: #f8f8f8;
 `;
 
 export default function MainPage() {

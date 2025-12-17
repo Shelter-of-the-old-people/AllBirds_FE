@@ -3,7 +3,7 @@ import ProductManage from '../components/admin/ProductManage';
 
 const AdminContainer = styled.div`
   min-height: calc(100vh - 180px); /* 헤더+푸터 제외 높이 */
-  background-color: #f4f6f8;
+  background-color: #f8f8f8;
   padding: 3rem 2rem; /* 위아래, 좌우 여백 */
 `;
 

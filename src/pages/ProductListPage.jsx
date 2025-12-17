@@ -4,7 +4,7 @@ import axios from 'axios';
 import ListProductCard from '../components/ProductListPage/ListProductCard';
 
 /* --- 스타일 정의 --- */
-const PageContainer = styled.div` max-width: 1400px; margin: 0 auto; padding: 40px 48px; font-family: 'Noto Sans KR', sans-serif; `;
+const PageContainer = styled.div` background-color: #f8f8f8; max-width: 1400px; margin: 0 auto; padding: 40px 48px; font-family: 'Noto Sans KR', sans-serif; `;
 
 /* Breadcrumb & Icons */
 const BreadcrumbNav = styled.div`
@@ -280,8 +280,8 @@ const ProductListPage = () => {
             <h4>소재</h4>
             <MaterialList>
               {[
-                { label: '가볍고 시원한 tree', value: 'tree' },
-                { label: '부드럽고 따뜻한 wool', value: 'wool' },
+                { label: '가볍고 시원한 tree', value: '가볍고 시원한 tree' },
+                { label: '부드럽고 따뜻한 wool', value: '부드럽고 따뜻한 wool' },
                 { label: '캔버스', value: '캔버스' },
                 { label: '플라스틱 제로 식물성 가죽', value: '플라스틱 제로 식물성 가죽' },
               ].map((mat) => (
