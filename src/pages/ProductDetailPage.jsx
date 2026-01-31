@@ -10,6 +10,7 @@ const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   padding: 4rem 2rem;
+  background-color: #f8f8f8;
 `;
 
 export default function ProductDetailPage() {

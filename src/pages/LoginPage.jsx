@@ -13,6 +13,7 @@ const Container = styled.div`
   justify-content: center;
   padding: 4rem 2rem;
   min-height: 60vh;
+  background-color: #f8f8f8;
 `;
 
 const Title = styled.h2`
